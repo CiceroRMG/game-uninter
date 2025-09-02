@@ -12,12 +12,12 @@ O objetivo: atravessar o nível, derrotar inimigos NightBorne, coletar “dopami
 ## Prints
 
 <p align="center">
-  <img src="assets/prints/inicial.png" alt="Menu Principal" width="48%" style="border-radius: 15px;">
-  <img src="assets/prints/game1.png" alt="Ação no Jogo" width="48%" style="border-radius: 15px;">
+  <img src="public/assets/prints/game1.png" alt="Menu Principal" width="48%" style="border-radius: 15px;">
+  <img src="public/assets/prints/game1.png" alt="Ação no Jogo" width="48%" style="border-radius: 15px;">
 </p>
 <p align="center">
-  <img src="assets/prints/game2.png" alt="Pulando" width="48%" style="border-radius: 15px;">
-  <img src="assets/prints/gameover.png" alt="Game over" width="48%" style="border-radius: 15px;">
+  <img src="public/assets/prints/game2.png" alt="Pulando" width="48%" style="border-radius: 15px;">
+  <img src="public/assets/prints/gameover.png" alt="Game over" width="48%" style="border-radius: 15px;">
 </p>
 
 ---
