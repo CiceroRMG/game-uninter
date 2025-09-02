@@ -1,7 +1,11 @@
-import os
+import os, sys
+if getattr(sys, 'frozen', False):
+    BASE_DIR = sys._MEIPASS
+    ASSETS_DIR = os.path.join(BASE_DIR, 'assets')
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    ASSETS_DIR = os.path.join(os.path.dirname(BASE_DIR), 'assets')
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ASSETS_DIR = os.path.join(os.path.dirname(BASE_DIR), 'assets')
 IMG_DIR = os.path.join(ASSETS_DIR, 'images')
 SND_DIR = os.path.join(ASSETS_DIR, 'sounds')
 FONT_DIR = os.path.join(ASSETS_DIR, 'fonts')

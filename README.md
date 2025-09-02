@@ -1,33 +1,113 @@
 # Brainrot Platformer Demo
 
-Tema: "Brainrot" — estética caótica de memes, sobrecarga visual e sons repetitivos.
-Personagem principal: Tum Tum Sahur.
+Uma demo de plataforma 2D em Pygame com estética "Brainrot": estímulos visuais rápidos, sons repetitivos e humor caótico. Personagem: Tum Tum Sahur.
 
-## Funcionalidades
-- Loop principal com Pygame
-- Sistema de cena (menu inicial e jogo)
-- Personagem jogável: movimento lateral, pulo, física básica, animação simples
-- Plataformas estáticas + detecção de colisão
-- Coletáveis "dopamina" que aumentam score
-- Inimigos com movimento padrão (patrulha) e knockback
-- Barra de vida + sistema de game over / restart
-- Efeitos visuais: tremor de câmera leve quando leva dano
-- Sistema de áudio
+---
 
-## Como rodar
-Instale dependências:
+## Visão Geral
+O objetivo: atravessar o nível, derrotar inimigos NightBorne, coletar “dopaminas” (moedas) e abrir o portão final. Há HUD de vida e score, animações GIF (com Pillow), plataformas estáticas e flutuantes.
+
+---
+
+## Principais Funcionalidades
+- Loop de jogo + gerenciador de cenas (menu, jogo, fim)
+- Player: movimento lateral, pulo, ataque, gravidade, invulnerabilidade breve após dano
+- Inimigos NightBorne com patrulha, animações (idle/run/attack/hurt/death)
+- Coletáveis que aumentam pontuação
+- Plantas animadas (decoração)
+- Portão abre ao eliminar todos inimigos
+- HUD (vida + score)
+- Sistema básico de áudio
+- Suporte a build standalone (PyInstaller)
+
+---
+
+## Controles
+| Tecla | Ação |
+|-------|------|
+| A / ← | Andar esquerda |
+| D / → | Andar direita |
+| Espaço | Pular |
+| J | Atacar |
+| Esc | Sair |
+
+(Ajuste aqui se seu main usa outras teclas.)
+
+---
+
+## Estrutura de Pastas (resumida)
 ```
+assets/
+  images/        # Sprites, GIFs, tiles, plantas
+  fonts/         # Fontes (ex: Kaph)
+  sounds/        # Efeitos / música (se usados)
+src/
+  main.py
+  settings.py
+  core/          # SceneManager etc.
+  entities/      # Player, inimigos, plataformas, coletáveis
+  levels/        # level1.py
+  ui/            # HUD
+```
+
+---
+
+## Dependências
+Lista em requirements.txt:
+```
+pygame==2.6.1
+Pillow
+```
+Pillow é necessário para animar GIFs. Sem ele, inimigos ficam estáticos.
+
+Instalar (ambiente virtual recomendado):
+```
+python -m venv .venv
+.\.venv\Scripts\activate
 pip install -r requirements.txt
 ```
-Execute:
+
+---
+
+## Executar em Desenvolvimento
 ```
 python -m src.main
 ```
 
-## Build para Windows (exe)
-Após confirmar que roda localmente:
+---
+
+## Build Windows (EXE)
+PowerShell (na raiz do projeto):
 ```
+pip install --upgrade pip
+pip install -r requirements.txt
 pip install pyinstaller
-pyinstaller -F -w -n brainrot_game --add-data "assets:assets" src/main.py
+pyinstaller --clean --noconfirm ^
+  --name BrainRotGame ^
+  --noconsole ^
+  --add-data "assets\images;assets/images" ^
+  --add-data "assets\fonts;assets/fonts" ^
+  --add-data "assets\sounds;assets/sounds" ^
+  src\main.py
 ```
-Se usar PowerShell, ajustar aspas. Copie a pasta `assets` para o mesmo diretório do exe, mantendo hierarquia.
+Executável: `dist/BrainRotGame/BrainRotGame.exe`
+
+Gerar ZIP no windows:
+```
+powershell -command "Compress-Archive -Path 'dist\\BrainRotGame\\*' -DestinationPath 'BrainRotGame_windows.zip' -Force"
+```
+
+Se usar PowerShell com quebras de linha, troque ^ por acento grave (`) ou deixe tudo em uma única linha.
+
+---
+
+## Problemas Comuns
+| Sintoma | Causa | Solução |
+|---------|-------|---------|
+| GIF parado | Pillow ausente | pip install Pillow |
+| Fonte não carrega | Caminho errado | Verificar settings.FONT_DIR |
+| Assets faltando no EXE | --add-data incompleto | Conferir caminhos |
+| Tela preta no EXE | Erro silencioso | Rodar versão com console (remova --noconsole) |
+| Porta não abre | Inimigo vivo fora da tela | Eliminar todos os NightBorne |
+
+---

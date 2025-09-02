@@ -16,15 +16,15 @@ class Player(pygame.sprite.Sprite):
         self.state = 'idle'
         self.frame_index = 0
         self.frame_timer = 0.0
-        self.anim_speed = 0.12  # segundos por frame aproximado
-        self.facing = 1  # 1 direita, -1 esquerda
+        self.anim_speed = 0.12 
+        self.facing = 1  # 1
         self.attack_timer = 0.0
-        self.attack_hit_set = set()  # inimigos já atingidos neste ataque
+        self.attack_hit_set = set() 
 
         self._load_animations()
         first_frame = self.animations[self.state][0]
-    hb_w = int(first_frame.get_width() * 0.6)
-    hb_h = int(first_frame.get_height() * 0.9)
+        hb_w = int(first_frame.get_width() * 0.6)
+        hb_h = int(first_frame.get_height() * 0.9)
         self.rect = pygame.Rect(pos[0], pos[1], hb_w, hb_h)
         self.image = pygame.Surface(first_frame.get_size(), pygame.SRCALPHA)
         self._blit_frame(first_frame)
@@ -41,7 +41,7 @@ class Player(pygame.sprite.Sprite):
     def _load_animations(self):
         base = os.path.join(settings.IMG_DIR, 'TungTungTung Sahur', 'Sprites')
 
-    def slice_sheet(path):
+        def slice_sheet(path: str):
             if not os.path.exists(path):
                 surf = pygame.Surface((48, 48), pygame.SRCALPHA)
                 surf.fill((255, 0, 255))
@@ -52,33 +52,28 @@ class Player(pygame.sprite.Sprite):
             w = sheet.get_width()
             if h <= 0 or w <= 0:
                 return []
-            if w % h != 0:
-                frame_w = h
-            else:
-                frame_w = h
-            frames = []
+            frame_w = h
             cols = max(1, w // frame_w)
+            frames_local = []
             for i in range(cols):
                 frame = sheet.subsurface(pygame.Rect(i * frame_w, 0, frame_w, h)).copy()
-                frames.append(frame)
-            return frames
+                frames_local.append(frame)
+            return frames_local
 
-    def crop_frames_preserve_baseline(frames):
-            bboxes = []
-            cropped = []
+        def crop_frames_preserve_baseline(frames):
+            if not frames:
+                return frames
             max_w = 0
             max_h = 0
+            cropped = []
             for f in frames:
                 r = f.get_bounding_rect(min_alpha=1)
                 if r.width == 0 or r.height == 0:
                     r = pygame.Rect(0, 0, 1, 1)
                 sub = f.subsurface(r).copy()
                 cropped.append(sub)
-                bboxes.append(r)
-                if r.width > max_w:
-                    max_w = r.width
-                if r.height > max_h:
-                    max_h = r.height
+                max_w = max(max_w, r.width)
+                max_h = max(max_h, r.height)
             uniform = []
             for sub in cropped:
                 canvas = pygame.Surface((max_w, max_h), pygame.SRCALPHA)
@@ -88,23 +83,40 @@ class Player(pygame.sprite.Sprite):
                 uniform.append(canvas)
             return uniform
 
-        sheet_map = {
-            'idle': 'Idling.png',
-            'run': 'Running .png',
-            'walk': 'Running .png',
-            'jump': 'Jumping.png',
-            'attack': 'Basic Attack .png'
+        sheet_map_candidates = {
+            'idle':   ['Idling.png', 'Idle.png'],
+            'run':    ['Running .png', 'Running.png'],
+            'walk':   ['Running .png', 'Running.png'],
+            'jump':   ['Jumping.png', 'Jump.png'],
+            'attack': ['Basic Attack .png', 'Basic Attack.png', 'Attack.png'],
         }
-        for key, filename in sheet_map.items():
-            path = os.path.join(base, filename)
-            frames = slice_sheet(path)
-            if not frames:
+
+        for anim_key, name_list in sheet_map_candidates.items():
+            frames = []
+            picked_name = None
+            for filename in name_list:
+                path = os.path.join(base, filename)
+                if os.path.exists(path):
+                    frames = slice_sheet(path)
+                    picked_name = filename
+                    break
+            if not frames:  # fallback
                 frames = [settings.load_image('player_placeholder.png', (48, 48))]
             else:
                 frames = crop_frames_preserve_baseline(frames)
-            self.animations[key] = frames
-        if 'walk' in self.animations and 'run' not in self.animations:
+            self.animations[anim_key] = frames
+            if settings.DEBUG:
+                print(f"[Player] Anim '{anim_key}' carregada ({len(frames)} frames) - arquivo: {picked_name}")
+
+        if 'run' not in self.animations and 'walk' in self.animations:
             self.animations['run'] = self.animations['walk']
+        if 'idle' not in self.animations:
+            for k, v in self.animations.items():
+                if v:
+                    self.animations['idle'] = [v[0]]
+                    break
+        if settings.DEBUG:
+            print('[Player] Resumo animações:', {k: len(v) for k, v in self.animations.items()})
 
     def _set_state(self):
         if self.attack_timer > 0:
@@ -192,11 +204,13 @@ class Player(pygame.sprite.Sprite):
     def get_attack_rect(self):
         if self.attack_timer <= 0:
             return None
-    if self.attack_timer < 0.2:
+        total_window = 0.4 
+        active_start = total_window * 0.45
+        if self.attack_timer > total_window or self.attack_timer < total_window - active_start:
             return None
-    reach = int(self.rect.width * 2)
-    height = int(self.rect.height * 0.8)
-        top = self.rect.bottom - height
+        reach = max(50, int(self.rect.width * 1.4))
+        height = int(self.rect.height * 1.1)
+        top = self.rect.centery - height//2
         if self.facing == 1:
             return pygame.Rect(self.rect.right, top, reach, height)
         else:

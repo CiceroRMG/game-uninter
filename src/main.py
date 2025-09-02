@@ -301,6 +301,12 @@ class GameScene(Scene):
         for c in self.level.collectibles:
             r = c.rect.move(self.camera_offset + shake)
             screen.blit(c.image, r)
+        if settings.DEBUG:
+            atk_rect_dbg = self.player.get_attack_rect()
+            if atk_rect_dbg:
+                pygame.draw.rect(screen, (255,255,0), atk_rect_dbg.move(self.camera_offset + shake), 1)
+            for e in self.level.enemies:
+                pygame.draw.rect(screen, (0,255,0), e.rect.move(self.camera_offset + shake), 1)
         if self.player.health > 0:
             draw_rect = getattr(self.player, 'render_rect', self.player.rect)
             screen.blit(self.player.image, draw_rect.move(self.camera_offset + shake))

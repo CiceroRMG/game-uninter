@@ -11,6 +11,7 @@ except ImportError:
     if base not in sys.path:
         sys.path.append(base)
     from entities.platform import Platform  # type: ignore
+    from entities.platform import FloatingPlatform  # type: ignore
     from entities.enemy import Enemy  # type: ignore
     from entities.nightborne import NightBorneEnemy  # type: ignore
     from entities.collectible import Collectible  # type: ignore
@@ -48,7 +49,6 @@ class Level1:
         self.collectibles.append(Collectible((360, GROUND_Y-96)))
         self.collectibles.append(Collectible((760, GROUND_Y-96)))
 
-        # Plantas decorativas reposicionadas (variedade de alturas)
         self.plants.append(Plant('BlueFlower1', (120, GROUND_Y-48)))
         self.plants.append(Plant('BlueFlower1', (500, GROUND_Y-50)))
         self.plants.append(Plant('BlueFlower1', (1040, GROUND_Y-52)))

@@ -34,7 +34,7 @@ class Enemy(pygame.sprite.Sprite):
         self.attack_timer = 0
 
         self._load_animations()
-    self._normalize_animations()
+        self._normalize_animations()
 
         first = self.animations['idle'][0]
         fw, fh = first.get_width(), first.get_height()
